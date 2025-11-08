@@ -97,11 +97,16 @@ ReaderView.paintTo = function(self, bb, x, y)
     local pages_done = self.ui.toc:getChapterPagesDone(pageno) or 0
     pages_done = pages_done + 1 -- This +1 is to include the page you're looking at
     local chapter_progress = pages_done .. " ⁄ ⁄ " .. pages_chapter
-    -- Author(s):
-    local book_author = self.ui.doc_props.authors
-    if book_author:find("\n") then -- Show first author if multiple authors
-        book_author =  T(_("%1 et al."), util.splitToArray(book_author, "\n")[1] .. ",")
+    
+    -- Author(s) - FIXED to handle nil values:
+    local book_author = ""
+    if self.ui.doc_props.authors then
+        book_author = self.ui.doc_props.authors
+        if book_author:find("\n") then -- Show first author if multiple authors
+            book_author = T(_("%1 et al."), util.splitToArray(book_author, "\n")[1] .. ",")
+        end
     end
+    
     -- Clock:
     local time = datetime.secondsToHour(os.time(), G_reader_settings:isTrue("twelve_hour_clock"))
     -- Battery:
